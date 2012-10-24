@@ -94,7 +94,6 @@ function clear_session(obj) {
                             data.currency_for_total = "$";
                             data.total = "0.00";
                             display_totals(data);
-                            console.log(data);
                         });
 
                         request.fail(function (jqXHR, textStatus, errorThrown) {
@@ -218,7 +217,6 @@ function load_previous_session() {
             part = data[i];
             part.row = jQuery.parseJSON(part.row);
             part = build_row(part);
-            console.log(part);
             jQuery('#abundaCalcTbl').prepend(part.row_html);
             jQuery('td:contains("' + part.product_code + '")').parent()
                 .find('td')
@@ -280,7 +278,7 @@ function lookup_item(obj) {
         // The product code must be at least 6 digits
         //
         if (jQuery('#product_code').val().length > 5) {
-            please_wait(true);
+            //please_wait(true);
 
             serial = jQuery("#abundaInput").serialize();
 
@@ -338,6 +336,7 @@ function please_wait(UILocked) {
     // Wait Mode
     //
     if (UILocked) {
+        jQuery.prompt({ state: { html: "<p>Getting information ...</p>", buttons: {}} });
         /*jQuery('#abunda_please_wait').show();
         jQuery('#lookupItem').addClass('disabled');
         jQuery('#submitList').addClass('disabled');
@@ -348,7 +347,7 @@ function please_wait(UILocked) {
         // Go,Go,Go...
         //
     } else {
-
+        jQuery.prompt.close();
     }
 }
 
@@ -361,7 +360,7 @@ function please_wait(UILocked) {
 function submit_the_list(obj) {
     if (!jQuery(obj).hasClass('disabled') && (jQuery('#total_item_count').text() > 0)) {
 
-        please_wait(true);
+        
 
         var state = 0;
 
@@ -503,7 +502,9 @@ function submit_the_list(obj) {
                     focus: 2,
                     submit: function (ev, but, message, val) {
                         if (but == "submit") {
-                            return true;
+                            jQuery.prompt.goToState('finish');
+                            submit_my_list(val);
+                            return false;
                         }
 
                         if (but != 0) {
@@ -541,16 +542,34 @@ function submit_the_list(obj) {
                         jQuery.prompt.goToState('state0');
                         return false;
                     }
+                },
+                finish: {
+                    html: "<center><p>Sending your trade request and locking in your quote!<br/><span style='font-size:xx-small;'>Give our pecking pigeons a second</span></p></center><center><img src='" + abundacalc.url + "/images/spinner.gif'/></center>",
+                    buttons: {}
                 }
             };
         var str = '';
         jQuery.prompt(states, {
             callback: function (ev, v, m, f) {
+                
                 if (v) {
-                    jQuery.each(f, function (i, obj) {
-                        str += '&' + i + '=' + obj;
-                    });
-                    var request = jQuery.ajax(
+                    
+                } else {
+                    please_wait(false);
+                }
+            }
+        });
+    }
+}
+
+function submit_my_list(f) {
+    str = "";
+
+    jQuery.each(f, function (i, obj) {
+        str += '&' + i + '=' + obj;
+    });
+
+    var request = jQuery.ajax(
                             {
                                 type: 'GET',
                                 url: 'http://' + abundacalc.server + '/trade/process/submit.php',
@@ -558,30 +577,25 @@ function submit_the_list(obj) {
                                 dataType: 'jsonp'
                             });
 
-                    request.done(function (data) {
-                        // No errors
-                        //
-                        if (data.error == '') {
-                            jQuery('#abundaCalcTbl > tbody').children().remove();
-                            display_totals(data);
-                            jQuery.prompt('Your list has been received.<br/>Thank you for submitting your list to Abundatrade.');
-                            new_session();
-                        } else {
-                            jQuery.prompt('Your list could not be sent.<br/>' + data.error);
-                            please_wait(false);
-                        }
-                    });
+                            request.done(function (data) {
+                                // No errors
+                                //
+                                if (data.error == '') {
+                                    jQuery('#abundaCalcTbl > tbody').children().remove();
+                                    display_totals(data);
+                                    //jQuery.prompt('Your list has been received.<br/>Thank you for submitting your list to Abundatrade.');
+                                    window.location = abundacalc.thanks;
+                                    new_session();
+                                } else {
+                                    jQuery.prompt('Your list could not be sent.<br/>' + data.error);
+                                    please_wait(false);
+                                }
+                            });
 
-                    request.fail(function (jqXHR, textStatus, errorThrown) {
-                        alert("Request failed: " + textStatus + " - " + errorThrown);
-                        please_wait(false);
-                    });
-                } else {
-                    please_wait(false);
-                }
-            }
-        });
-    }
+    request.fail(function (jqXHR, textStatus, errorThrown) {
+        alert("Request failed: " + textStatus + " - " + errorThrown);
+        please_wait(false);
+    });
 }
 
 /* 
@@ -635,8 +649,6 @@ function build_unknown(code, quantity, id) {
 
 function build_row(data) {
     data.row_html = "";
-    console.log("Building row");
-    console.log(data);
 
     if (jQuery.isArray(data.row)) {
         for (var i = 0; i < data.row.length; i++) {
