@@ -230,7 +230,23 @@
 
 #abundaCalcTbl tbody tr 
 {
-    background:#cef4ff;
+    background:#ffffff;
+}
+
+.td_image
+{
+    clear: none;
+    float: left;
+    width:auto;
+	
+}
+
+.td_details {
+	float:right;
+}
+
+.details {
+	
 }
 
 #abundaCalcTbl tbody {
@@ -248,7 +264,7 @@
     color:white;
     font-weight:bold;
     font-size:18px;
-    text-align:right;
+    text-align:left;
 }
 
 #abundaCalcTbl tfoot th a {
@@ -257,6 +273,13 @@
 	font-size:16px;
 	font-weight:bold;
 	
+}
+
+#abundaCalcTbl tfoot th a:hover {
+	text-decoration: none;
+	color:Aqua;
+	font-size:16px;
+	font-weight:bold;
 }
 
 #abundaCalcTbl thead th 
@@ -277,6 +300,13 @@
 {
     text-align: right;
 	color:#030;
+}
+
+#abundaCalcTbl thead th a:hover {
+	text-decoration: none;
+	color:Aqua;
+	font-size: 16px;
+	font-weight: bold;
 }
 
 #abundaCalcTbl thead th a 
