@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 0.3
+Version: 0.4
 Author URI: http://withinboredom.info
  */
 
@@ -99,7 +99,6 @@ class abundatrade_withinboredom {
         $table = '<table cellspacing="0" cellpadding="0" id="abundaCalcTbl">
                   <thead>
                     <tr>
-                      <th>#</th>
                       <th>UPC</th>
                       <th>Product Details</th>
                       <th>Qty</th>
@@ -113,7 +112,7 @@ class abundatrade_withinboredom {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <th colspan="2">Total Items:</th>
+                      <th >Total Items:</th>
                       <th id="item_count">0</th>
                       <th colspan="2">Pre-Valuation Total</th>
                       <th id="grand_total">$0.00</th>
@@ -193,7 +192,7 @@ class abundatrade_withinboredom {
         if (file_exists($folders['PluginDir'] . $file . ".php"))
             include_once($folders['PluginDir'] . $file . ".php");
         //else
-            //echo "<pre>file no exists: " . $folders['PluginDir'] . $file . ".php\n</pre>";
+        //echo "<pre>file no exists: " . $folders['PluginDir'] . $file . ".php\n</pre>";
     }
     
     /**
