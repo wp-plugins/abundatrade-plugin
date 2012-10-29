@@ -213,7 +213,6 @@ function display_bulk_upload(display_prompt, id) {
     if (id == null) id = abundacalc['upload_id'];
 
     check = 0;
-    console.log(id);
 
     var stop = setInterval(function () {
         var request = jQuery.ajax(
@@ -227,7 +226,7 @@ function display_bulk_upload(display_prompt, id) {
         request.success(function (data) {
             if (data.error == false || data.on == 0) {
                 percent = data.on / data.total * 100;
-                
+
                 if (data.on == 1 && data.total == 1) {
                     if (check++ < 10) {
                         jQuery("#progress").get(0).innerHTML = "Processing complete -- building your email";
@@ -244,6 +243,7 @@ function display_bulk_upload(display_prompt, id) {
                         clearInterval(fin);
                         jQuery.prompt.close();
                         bulk_close_window();
+                        load_previous_session(true);
                     }, 2000);
                 }
                 else {
@@ -279,7 +279,6 @@ function submit_bulk(val) {
         request.success(function (data) {
             new_session();
             id = data[0].data;
-            console.log(data[0].data);
             display_bulk_upload(false, id);
         });
 }
@@ -739,6 +738,10 @@ function submit_my_list(f) {
 *
 */
 jQuery(document).ready(function () {
+
+    if (abundacalc.upload_id) {
+        display_bulk_upload(true);
+    }
 
     /*
     * Load previous session data from backend.
