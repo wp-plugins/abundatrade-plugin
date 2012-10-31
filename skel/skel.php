@@ -23,6 +23,11 @@ class skel__skel
     private $folders;
     
     /**
+     * @var int Plugin settings page hook id
+     */
+    private $page_hook;
+    
+    /**
      * Lays out the skel framework
      */
 	function __construct()
@@ -63,6 +68,9 @@ class skel__skel
         if (current_user_can('manage_options')) $this->render_tabs();
     }
     
+    /**
+     * Displays the tabs at the top of the settings page
+     */
     private function render_tabs() {
         ?>
         <div id="icon-MoneyPress_Abundatrade_Edition" class="icon32"><br /></div><h2>Abundatrade Settings</h2>
@@ -87,9 +95,45 @@ class skel__skel
     }
     
     /**
+     * Adds a help tab to a settings tab
+     */
+    public function add_help_tab() {
+        
+        if (!isset($_GET['tab'])) $_GET['tab'] = 0;
+        
+        $screen = get_current_screen();
+        
+        if ($screen->id != $this->page_hook) {
+            return;
+        }
+        
+        foreach ($this->config['help'] as $tab => $help) {
+            if($tab == $_GET['tab']) {
+                foreach ($help as $menu) {
+                    $screen->add_help_tab(array(
+                        'id' => $menu[0],
+                        'title' => $menu[0],
+                        'content' => $menu[1],
+                        'callback' => array($this, 'show_content')
+                        ));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Call back for custom scenarios on the help tab
+     * @param WP_Screen $screen The screen object for the current page
+     * @param array $tab An array containing the current help tab selected
+     */
+    function show_content($screen, $tab) {
+    }
+    
+    /**
      * Builds the settings menu stuff
      */
     public function buildSettings() {
-        add_options_page($this->config['config']['page_title'], $this->config['config']['button_title'], 'manage_options', $this->config['config']['slug'], array($this, "display"));
+        $this->page_hook = add_options_page($this->config['config']['page_title'], $this->config['config']['button_title'], 'manage_options', $this->config['config']['slug'], array($this, "display"));
+        add_action('load-'.$this->page_hook, array($this, 'add_help_tab'));
     }
 }
