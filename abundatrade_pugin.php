@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.0
+ * @version 1.0.1
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.0
+Version: 1.0.1
 Author URI: http://withinboredom.info
  */
 
@@ -164,7 +164,7 @@ class abundatrade_withinboredom {
         wp_enqueue_script("abundatrade_impromptu");
         $abundacalc = array('server' => 'abundatrade.com', 
             'url' => $this->folders['PluginUrl'], 
-            'thanks' => $this->settings->thankyou_page);
+            'thanks' => $this->settings->Thank_you_page);
         if (isset($_REQUEST['upload_id']) && $_REQUEST['upload_id'] != '') {
             $abundacalc['upload_id'] = $_REQUEST['upload_id'];
         }
