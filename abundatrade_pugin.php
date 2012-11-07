@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.0.2
+ * @version 1.0.3
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.0.2
+Version: 1.0.3
 Author URI: http://withinboredom.info
  */
 
@@ -68,6 +68,7 @@ class abundatrade_withinboredom {
     <input id="item_num" value="1" name="item_num" type="hidden"/>
     <input id="a" value="' . $this->settings->Affiliate_ID . '" type="hidden"/>
     <div class="input_container">
+    <div id="bulk_button" class="green_bg"><span class="abunda_text">Have a lot of items:</span><div onclick="bulk_open();" id="bulk_likea_button">Bulk Upload</div></div>
             </div>
     
     <div class="input_container">
@@ -162,7 +163,7 @@ class abundatrade_withinboredom {
         wp_enqueue_style("abundatrade_classic");
         wp_enqueue_script("abundatrade_remote");
         wp_enqueue_script("abundatrade_impromptu");
-        $abundacalc = array('server' => 'abundatrade.com', 
+        $abundacalc = array('server' => 'dev.abundatrade.com', 
             'url' => $this->folders['PluginUrl'], 
             'thanks' => $this->settings->Thank_you_page);
         if (isset($_REQUEST['upload_id']) && $_REQUEST['upload_id'] != '') {
