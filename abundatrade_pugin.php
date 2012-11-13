@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.1.1
+ * @version 1.2
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.1.1
+Version: 1.2
 Author URI: http://withinboredom.info
  */
 
@@ -88,7 +88,7 @@ class abundatrade_withinboredom {
       <input class="submit" value="" type="submit"/>
     </div>';
         $bulk_button = '<div id="bulk_button" class="green_bg"><span class="abunda_text">Have a lot of items:</span><div onclick="bulk_open();" id="bulk_likea_button">Bulk Upload</div></div>';
-        $bulk = "<div id=\"bulk\" class=\"orange_bg\"><div id=\"bulk_help\" class='abunda_text'>You can cut and paste directly from popular office programs<br/> like Excel and Word. The following format is accepted: <pre>UPC/ISBN     Quantity\n804147123529 2\n024543525998 1</pre></div><textarea cols=20 rows=10 id=\"bulk_upload\" name=\"bulk_upload\"></textarea><br/><div id='bulk_close' onclick='bulk_close_window();'>Go back</div><div id='bulk_submit' onclick='bulk_submit_items();'>Submit List</div></div>";
+        $bulk = "<div id=\"bulk\" class=\"orange_bg\"><div id=\"bulk_help\" class='abunda_text'>You can cut and paste directly from popular office programs<br/> like Excel and Word.</div><textarea placeholder=\"02454352525998\" cols=20 rows=10 id=\"bulk_upload\" name=\"bulk_upload\"></textarea><br/><div id='bulk_close' onclick='bulk_close_window();'>Go back</div><div id='bulk_submit' onclick='bulk_submit_items();'>Submit List</div></div>";
         $second = '<div id="second_content" class="calc_content_wrap green_bg">
                       <div class="second_content_sec1">
                       <label>Total Items:</label><div id="total_item_count">0</div></div>
@@ -131,10 +131,14 @@ class abundatrade_withinboredom {
                 </tr>
             </tbody>
         </table>';
-        $display .= $bulk_button;
+        
+        $status = "<div id=\"login_status_abundatrade\"></div>";
+        
+        $display .= $status;
         $display .= $bulk;
         $display .= $top;
         $display .= $endform;
+        $display .= $bulk_button;
         $display .= $second;
         
         $display .= $table;
@@ -156,10 +160,12 @@ class abundatrade_withinboredom {
     
     public function addScripts() {
         wp_register_style("abundatrade_classic", $this->folders['PluginUrl'] . '/themes/' . $this->settings->Theme . '.css');
-        wp_register_script("abundatrade_remote", $this->folders['PluginUrl'] . '/js/remote.js', array('jquery'));
+        wp_register_script("abundatrade_md5", $this->folders['PluginUrl'] . '/js/MD5.js');
+        wp_register_script("abundatrade_remote", $this->folders['PluginUrl'] . '/js/remote.js', array('jquery','abundatrade_md5'));
         wp_register_script("abundatrade_impromptu", $this->folders['PluginUrl'] . '/js/jquery-impromptu.4.0.min.js', array('jquery'));
         
         wp_enqueue_style("abundatrade_classic");
+        wp_enqueue_script("abundatrade_md5");
         wp_enqueue_script("abundatrade_remote");
         wp_enqueue_script("abundatrade_impromptu");
         $abundacalc = array('server' => 'abundatrade.com', 
