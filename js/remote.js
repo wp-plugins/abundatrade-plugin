@@ -1,4 +1,9 @@
-﻿/*****************************************************************
+// ==ClosureCompiler==
+// @compilation_level SIMPLE_OPTIMIZATIONS
+// @output_file_name remote.min.js
+// ==/ClosureCompiler==
+
+/*****************************************************************
 * file: remote.js
 *
 * Abundatrade calculator communication and processing scripts.
@@ -430,7 +435,7 @@ function load_previous_session(pretty) {
 }
 
 /** Compresses duplicates */
-function addDuplicatesToQuantity(inputUPC) {
+function addDuplicatesToQuantity(inputUPC, newupc) {
     var upcs = $$('td.upc');
     var quantities = $$('td.quantity');
     var duplicateQuantity = 0;
@@ -496,6 +501,7 @@ function lookup_item(obj) {
             request.done(function (data) {
                 Remove_Item(item_code);
                 data.row = jQuery.parseJSON(data.row);
+                Remove_Item(data.product_code);
                 build_row(data);
                 lastItem = data;
                 jQuery('#abundaCalcTbl').prepend(data.row_html);
@@ -531,22 +537,6 @@ function lookup_item(obj) {
 */
 function please_wait(UILocked) {
 
-    // Wait Mode
-    //
-    if (UILocked) {
-        //jQuery.prompt({ state: { html: "<p>Getting information ...</p>", buttons: {}} });
-        /*jQuery('#abunda_please_wait').show();
-        jQuery('#lookupItem').addClass('disabled');
-        jQuery('#submitList').addClass('disabled');
-        jQuery('#delete_all_top').addClass('disabled');
-        jQuery('#delete_all_bottom').addClass('disabled');
-        jQuery('.delete_this_row').addClass('disabled');*/
-
-        // Go,Go,Go...
-        //
-    } else {
-        //jQuery.prompt.close();
-    }
 }
 
 /** A regular submission final page */
@@ -644,7 +634,7 @@ function processLogin(ev, but, message, val) {
         if (but == 0)
             return 0;
         if (but == 1) {
-            jQuery.prompt.goToState('state1');
+            Register(register_pass(),regular_finish, submit_my_list);
         }
         if (but == 2) {
             hide_for_guest();
@@ -739,7 +729,59 @@ function submit_modal(callback_to_submit, final_display) {
                     html: displayLogin(),
                     buttons: displayLoginButtons(),
                     focus: 1,
-                    submit: processLogin
+                    submit: function (ev, but, message, val) {
+                        if (loggedIn) {
+            if (but == 0) {
+                return 0;
+            }
+            if (but == 1) {
+                jQuery.prompt.goToState('state5');
+                return false;
+            }
+        }
+        else {
+            if (but == 0)
+                return 0;
+            if (but == 1) {
+                
+                Register(register_pass(),final_display, callback_to_submit);
+            }
+            if (but == 2) {
+                Register(register_guest(), final_display, callback_to_submit)
+                
+            }
+            if (but == -1) {
+                jQuery("#logging_on").fadeIn();
+                request = jQuery.ajax({
+                    url: 'http://' + abundacalc.server + '/trade/process/user/login/',
+                    dataType: 'jsonp',
+                    data: 'user='+jQuery('#abundatrade_user').val()+'&password='+jQuery("#abundatrade_password").val()+"&remember="+jQuery("#remember").is(":checked")
+                });
+                request.done(function(data) {
+                    if (data.error) {
+                        jQuery("#logging_on").fadeOut();
+                        jQuery("#login_error").delay(800).show();
+                    }
+                    else {
+                        jQuery("#login_error").hide();
+                        if (just_logging_in) {
+                            get_login_status();
+                            just_logging_in = false;
+                            jQuery.prompt.close();
+                        } else {
+                            get_login_status();
+                            just_logging_in = false;
+                            loggedIn = true;
+                            jQuery.prompt.goToState('state5');
+                        }
+                    }
+                });
+            }
+
+            return false;
+    
+                    }
+                    }
                 },
                 state1: {
                     html: '<select id="sex" name="sex">' +
