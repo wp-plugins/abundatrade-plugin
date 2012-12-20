@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.5.1
+ * @version 1.6
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.5.1
+Version: 1.6
 Author URI: http://withinboredom.info
  */
 
@@ -17,8 +17,16 @@ if (!defined("WP_CONTENT_DIR")) exit();
 
 class abundatrade_withinboredom {
     
+    /**
+     *
+     * @var array The active folders
+     */
     private $folders;
     
+    /**
+     *
+     * @var array The settings
+     */
     public $settings;
     
     /**
@@ -61,15 +69,15 @@ class abundatrade_withinboredom {
     }
     
     public function shortcode($atts) {
-        $display = '<div id="abundatrade">';
-        $top = '<div id="top_input_section" class="calc_content_wrap orange_bg">
+                $display = '<div id="abundatrade">';
+         $top = '<div id="top_input_section" class="calc_content_wrap calc_color1 calcbg1">
 
-  <form id="abundaInput" class="abundaInput" onsubmit="return false;" method="post" >
+  <form id="abundaInput" class="abundaInput" style="margin-top: 6px;" onsubmit="return false;" method="post" >
     <input id="item_num" value="1" name="item_num" type="hidden"/>
     <input id="a" value="' . $this->settings->Affiliate_ID . '" type="hidden"/>
     <div class="input_container">
             </div>
-    
+
     <div class="input_container">
       <div class="label">UPC or ISBN</div>
       <div class="product_holder">
@@ -85,62 +93,64 @@ class abundatrade_withinboredom {
     </div>
 
     <div class="submit_holder">
-      <input class="submit" value="" type="submit"/>
+      <input class="btn1 right btn_link1 btnbg1" value="+ Add Item" type="submit"/>
     </div>';
-        $bulk_button = '<div id="bulk_button" class="green_bg"><span class="abunda_text">Have a lot of items:</span><div onclick="bulk_open();" id="bulk_likea_button">Bulk Upload</div></div>';
-        $bulk = "<div id=\"bulk\" class=\"orange_bg\"><div id=\"bulk_help\" class='abunda_text'>You can cut and paste directly from popular office programs<br/> like Excel and Word.</div><textarea placeholder=\"02454352525998\" cols=20 rows=10 id=\"bulk_upload\" name=\"bulk_upload\"></textarea><br/><div id='bulk_close' onclick='bulk_close_window();'>Go back</div><div id='bulk_submit' onclick='bulk_submit_items();'>Submit List</div></div>";
-        $second = '<div id="second_content" class="calc_content_wrap green_bg">
-                      <div class="second_content_sec1">
-                      <label>Total Items:</label><div id="total_item_count">0</div></div>
-                      <div class="second_content_sec2">
-                        <label>Pre-Valuation Total:</label>
-                        <div id="total_prevaluation">
-                          $0.00                        </div>
+        $bulk_button = '<div id="bulk_button" class="calcbg1"><p class="abunda_text calc_color1">Have a lot of items? <a href="#" onclick="return bulk_open();" class="calc_linkS1">Bulk Upload</a></p></div>';
+        $bulk = "<div id=\"bulk\" class=\"calcbg1\"><div id=\"bulk_help\" class='abunda_text calc_color1'>You can cut and paste directly from popular office programs<br/> like Excel and Word.</div><textarea placeholder=\"02454352525998\" cols=20 rows=10 id=\"bulk_upload\" name=\"bulk_upload\"></textarea></p><p><a href='#' class=\"btn1 btnbg1 btn_link1 marleft\" onclick='return bulk_close_window();'>Go back</a><a href='#' class=\"btn1 btnbg1 btn_link1 marright\" onclick='bulk_submit_items();'>Submit List</a></p>
+	<p class=\"calcbg1 bottomcurve\">&nbsp;</p>
+    </div>";
+	$second = '<div id="second_content" class="calc_content_wrap calcbg2 calc_color2">
+                       <div class="second_content_sec1">
+                      <label class="calc_color2">Total Items:</label><div id="total_item_count">0</div></div>
+                      <div class="second_content_sec2"><label class="calc_color2">Pre-Valuation Total:</label><div id="total_prevaluation">$0.00</div>
                       </div>
-                      <div class="second_content_sec3"><a id="submitList" onclick="submit_the_list(this);"><img style="z-index:0;" src="'. $this->folders['PluginUrl'] .'/images/list-abunda.jpg" alt="" /></a></div>
+                      <div class="second_content_sec3"><a id="submitList" class="btnbg2 btn_link2" onclick="submit_the_list(this);">Send list to Abunda</a></div>
                       </div>';
         $endform = "</form></div>";
         $endtop = "</div>";
         $table = '<table cellspacing="0" cellpadding="0" id="abundaCalcTbl">
                   <thead>
                     <tr>
-                      <th>UPC</th>
-                      <th>Product Details</th>
-                      <th>Qty</th>
-                      <th>Per Item</th>
-                      <th>Total</th>
-                      <th class="delete"><a onclick="clear_session(this);">Delete All</a></th>
+                      <th class="calcbg3 calc_color3">UPC</th>
+                      <th class="calcbg3 calc_color3">Product Details</th>
+                      <th class="calcbg3 calc_color3">Qty</th>
+                      <th class="calcbg3 calc_color3 txtright">Per Item</th>
+                      <th class="calcbg3 calc_color3 txtright">Total</th>
+                      <th class="calcbg3 calc_color3"><a class="calc_linkS3" onclick="clear_session(this);">Delete All</a></th>
                       <th style="display: none;">ID</th>
                     </tr>
                   </thead>
                   <tbody id="abundaCalcBody_request">
+                    
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <th >Total Items:</th>
-                      <th id="item_count">0</th>
-                      <th colspan="2">Pre-Valuation Total</th>
-                      <th id="grand_total">$0.00</th>
-                      <th colspan="2"><a onclick="clear_session(this);">Delete All </a></th>
-                    </tr>
+                   <tfoot>
+                     <tr>
+                       <th class="calcbg2 calc_color2 thxpad">Total Items:</th>
+                       <th class="calcbg2 calc_color2" id="item_count">0</th>
+                       <th class="calcbg2 calc_color2 txtright" colspan="2">Pre-Valuation Total</th>
+                       <th class="calcbg2 calc_color2 txtright" id="grand_total">$0.00</th>
+                       <th colspan="2" class="calcbg2 center"><a class="calc_linkS4" onclick="clear_session(this);">Delete All</a></th>
+                     </tr>
                   </tfoot>
                   <tbody id="abundaCalcBody_process">
-		            </tbody>
-            <tbody >
-                <tr class="response">
-                </tr>
-            </tbody>
-        </table>';
-        
+		  <tr><td colspan="6" class="center" id="ready2go">Enter an item UPC, ISBN, or EAN to see its value here</td></tr>
+		</tbody>
+		<tbody >
+			<tr class="response">
+		</tbody>
+		</table>
+
+		<p class="calcbg2 bottomcurve">&nbsp;</p>';
+
         $status = "<div id=\"login_status_abundatrade\"></div>";
-        
+
         $display .= $status;
         $display .= $bulk;
         $display .= $top;
         $display .= $endform;
         $display .= $bulk_button;
         $display .= $second;
-        
+
         $display .= $table;
         $display .= $endtop;
         return $display;
@@ -161,9 +171,9 @@ class abundatrade_withinboredom {
     public function addScripts() {
         wp_register_style("abundatrade_classic", $this->folders['PluginUrl'] . '/themes/' . $this->settings->Theme . '.css');
         wp_register_script("abundatrade_md5", $this->folders['PluginUrl'] . '/js/MD5.js');
-        wp_register_script("abundatrade_remote", $this->folders['PluginUrl'] . '/js/remote.min.js', array('jquery','abundatrade_md5'));
+        wp_register_script("abundatrade_remote", $this->folders['PluginUrl'] . '/js/remote.js', array('jquery','abundatrade_md5'));
         wp_register_script("abundatrade_impromptu", $this->folders['PluginUrl'] . '/js/jquery-impromptu.4.0.min.js', array('jquery'));
-        wp_register_script("abundatrade_register", $this->folders['PluginUrl'] . '/js/register.min.js', array('jquery', 'abundatrade_remote'));
+        wp_register_script("abundatrade_register", $this->folders['PluginUrl'] . '/js/register.js', array('jquery', 'abundatrade_remote'));
         
         wp_enqueue_style("abundatrade_classic");
         wp_enqueue_script("abundatrade_md5");

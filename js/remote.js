@@ -230,6 +230,7 @@ function bulk_open() {
     jQuery("#second_content").slideUp(500);
     jQuery("#top_input_section").fadeOut(500);
     jQuery("#bulk").slideDown(500);
+    return false;
 }
 
 /* Closes the bulk upload bin and reloads the session
@@ -242,6 +243,7 @@ function bulk_close_window() {
     jQuery("#abundaCalcTbl").delay(100).fadeIn(400);
     jQuery("#bulk_button").slideDown(1000);
     load_previous_session(false);
+    return false;
 }
 
 /** Gets the rows for the bulk upload bin */
@@ -1118,11 +1120,45 @@ function submit_my_list(f) {
     });
 }
 
+function submitGiftCard() {
+    jQuery('input[name=Submit]').attr("disabled", "disabled");
+    jQuery('input[name=Submit]').attr("value", "Creating your giftcard ... please wait")
+    jQuery('input[name="specialid:9573"]').remove();
+    jQuery('input[name=listid]').val('48277');
+    jQuery('form[name=icpsignup] div div div').get(0).innerHTML += "<input type='hidden' name='specialid:48277' value ='IE9I'>"
+    jQuery('input[name=formid]').val('3389');
+    jQuery('input[name=reallistid]').val('1');
+    jQuery('input[name=doubleopt]').val('0');
+    var email = getParameterByName('email');
+    var key = getParameterByName('key');
+    if (jQuery(this).data('submit-me')) {
+        return true;
+    }
+    var request = jQuery.ajax(
+                            {
+                                type: 'GET',
+                                url: 'http://dev.' + abundacalc.server + '/trade/process/createGiftCard.php',
+                                data: 'email=' + email + "&key=" + key,
+                                dataType: 'jsonp',
+                                context: this,
+                                success: function(data) {
+                                        jQuery(this).data('submit-me', true).submit();
+                                }
+                            });
+    return false;
+}
+
 /* 
 * When the document has been loaded...
 *
 */
 jQuery(document).ready(function () {
+    if (getParameterByName('act') == 'gift') {
+        jQuery('input[name=fields_email]').val(getParameterByName('email'));
+        //jQuery('input[name=Submit]').attr('onclick','return submitGiftCard();');
+        jQuery('form[name=icpsignup]').submit(submitGiftCard);
+    }
+    
     if (jQuery("#login_status_abundatrade").val() != null) {
         if (abundacalc.upload_id) {
             display_bulk_upload(true);
@@ -1170,6 +1206,18 @@ jQuery(document).ready(function () {
     }
 });
 
+function getParameterByName(name)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.search);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 /** Builds an unknown row */
 function build_unknown(code, quantity, id) {
     return "<tr class='new response'> <td class='upc'>" + code + "</td> <td class='details'> <div class='td_details'> <strong>Unknown Item</strong><br /><em>Item not found. You may send for valuation</em></div> <div class='td_image'> <img src='http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._V192198896_.gif' alt='Unkown item' /> </div> </td> <td class='quantity'>" + quantity + "</td> <td class='item'><div class='item'>$0.00</td> <td class='values'>$0.00</td> <td class='delete'> <a href='#' alt='Delete' class='delete_this_row' id='del_" + id + "'>Delete</a></tr>";
@@ -1179,6 +1227,9 @@ function build_unknown(code, quantity, id) {
 function build_row(data) {
     data.row_html = "";
 
+    if (jQuery("#ready2go").length > 0) {
+        jQuery("#ready2go").remove();
+    }
 
     if (jQuery.isArray(data.row)) {
         for (var i = 0; i < data.row.length; i++) {
