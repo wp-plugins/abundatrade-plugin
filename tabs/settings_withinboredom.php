@@ -3,7 +3,7 @@
  * Displays a settings page
  * @author Robert Landers (landers.robert@gmail.com)
  * @package abundatrade
- * @version 1.0
+ * @version 1.6.1
  */
 
 //do not allow hijackers
@@ -85,6 +85,7 @@ class tabs__settings_withinboredom
     function getFileList($dir, $ext, $remove_ext) {
         $folders = apply_filters("abundatrade(getFolders)", array());
         $files = scandir($folders['PluginDir'] . '/' . $dir);
+        $files = array_merge($files, scandir($folders['UploadsDir']['basedir'] . '/abundatrade/' . $dir));
         $ret = array();
         foreach ($files as $file) {
             $pos = strpos($file, $ext);
