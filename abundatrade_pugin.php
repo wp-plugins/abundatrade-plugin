@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.6.5
+ * @version 1.6.6
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.6.5
+Version: 1.6.6
 Author URI: http://withinboredom.info
  */
 
@@ -176,10 +176,8 @@ class abundatrade_withinboredom {
         
         $gadget_begin = '<div id="gadget_abundatrade" style="'.$gadget_state.'" class="calc_content_wrap calc_color1 calcbg1 bottomcurve">';
 
-        if (isset($atts["manufacturer"])) {
-            $gadget_manufacturer = '<input type="hidden" value="'.$atts["manufacturer"] . '" id="gadget_manufacturer"/>';
-            $gadget_category = '<input type="hidden" value="' . $atts["category"] . '" id="gadget_category"/>';
-        }
+        $gadget_manufacturer = '<input type="hidden" value="'. (isset($atts["manufacturer"]) ? $atts["manufacturer"] : '') . '" id="gadget_manufacturer"/>';
+        $gadget_category = '<input type="hidden" value="' . (isset($atts["category"]) ? $atts["category"] : '') . '" id="gadget_category"/>';
         
         $gadget_selector = 
             '<form id="abundaGadgetInput" class="abundaInput" style="margin-top: 6px;" onsubmit="return false;" method="post" >
@@ -189,7 +187,7 @@ class abundatrade_withinboredom {
            '</div>
             
             <div class="input_container">
-              <div class="label">Select your gadget</div>
+              <div class="label">Gadget</div>
               <div class="product_holder">
                 <select class="center" id="gadget_code" name="gadget_code" onblur="" id="gadget_code">
                   <option value="-1">Loading Gadgets...</option>
@@ -197,8 +195,19 @@ class abundatrade_withinboredom {
               </div>
             </div>
             
+            <!-- <div class="input_container">
+              <div class="label">Condition</div>
+              <div class="product_holder">
+                <select class="center" id="header_condition" name="header_condition" onblur="" id="header_condition">
+                  <option value="like_new">Like New</option>
+                  <option value="good">Good</option>
+                  <option value="Other">All Others</option>
+                </select>
+              </div>
+            </div> -->
+            
             <div class="submit_holder">
-              <input class="btn1 right btn_link1 btnbg1" value="+ Add Gadget" type="submit"/>
+              <input class="btn1 right btn_link1 btnbg1" value="+ Add" type="submit"/>
             </div>
             
             </form>';
