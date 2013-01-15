@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.6.6
+ * @version 1.6.7
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.6.6
+Version: 1.6.7
 Author URI: http://withinboredom.info
  */
 
@@ -154,17 +154,17 @@ class abundatrade_withinboredom {
                   <tbody id="abundaCalcBody_request">
                     
                   </tbody>
-                   <tfoot>
+                   <!--<tfoot>
                      <tr>
-                       <th class="calcbg2 calc_color2 thxpad">Total Items:</th>
-                       <th class="calcbg2 calc_color2" id="item_count">0</th>
-                       <th class="calcbg2 calc_color2 txtright" colspan="2">Pre-Valuation Total</th>
-                       <th class="calcbg2 calc_color2 txtright" id="grand_total">$0.00</th>
-                       <th colspan="2" class="calcbg2 center"><a class="calc_linkS4" onclick="clear_session(this);">Delete All</a></th>
+                       <th class="calcbg2 calc_color2 thxpad">&nbsp;</th>
+                       <th class="calcbg2 calc_color2">&nbsp;</th>
+                       <th class="calcbg2 calc_color2 txtright" colspan="2">&nbsp;</th>
+                       <th class="calcbg2 calc_color2 txtright">&nbsp;</th>
+                       <th colspan="2" class="calcbg2 center">&nbsp;</th>
                      </tr>
-                  </tfoot>
+                  </tfoot>-->
                   <tbody id="abundaCalcBody_process">
-		  <tr><td colspan="6" class="center" id="ready2go">Enter an item UPC, ISBN, or EAN to see its value here</td></tr>
+		  <tr><td colspan="6" class="center">&nbsp;</td></tr>
 		</tbody>
 		<tbody >
 			<tr class="response">
