@@ -98,6 +98,7 @@ var loggedIn = false;
 function do_tour() {
     if (jQuery('#abundaGadgetInput').length > 0 && jQuery('#gadget_abundatrade').css('display') == 'block') {
         // for gadget side
+        jQuery.prompt(gadgetstates);
     }
     else {
         // for regular calculator
@@ -129,7 +130,7 @@ function get_login_status() {
         );
         request.done(function(data) {
             if (data.status) {
-                jQuery('#login_status_abundatrade').get(0).innerHTML = "Hello " + data.first_name + " " + data.last_name + " <em><a onclick=\"abundatrade_logout()\">logout</a></em>" + tour;
+                jQuery('#login_status_abundatrade').get(0).innerHTML = "Hello " + data.first_name + " " + data.last_name + ", <em>view your <a href='http://abundatrade.com/trade/user/profile/' title='View your information, and edit past valuations!'>profile</a></em> <em>(<a onclick=\"abundatrade_logout()\">logout</a>)</em>" + tour;
                 if (data.first_name == 'Super Cow')
                     loggedIn = false;
                 else loggedIn = true;
@@ -229,8 +230,10 @@ function new_session(this_link) {
 * Render the header/footer totals from JSONP data.
 *
 */
-function display_totals(data) {
-    jQuery('#product_code').val('');
+function display_totals(data, no_reset) {
+    if (!no_reset) {
+        jQuery('#product_code').val('');
+    }
     jQuery('#item_count').html(data.total_qty);
     jQuery('#total_item_count').html(data.total_qty);
     jQuery('#grand_total').html(data.currency_for_total + data.total);
@@ -253,8 +256,10 @@ function display_totals(data) {
     // Set the delete button
     //
     jQuery('.delete_this_row').attr('onclick', 'delete_the_row(this); return false;');
-    jQuery('#product_qty').val('1');
-    jQuery('#product_code').focus();
+    if (!no_reset) {
+        jQuery('#product_qty').val('1');
+        jQuery('#product_code').focus();
+    }
 }
 
 /**
@@ -335,13 +340,13 @@ function display_bulk_upload(display_prompt, id) {
                 percent = data.on / data.total * 100;
 
                 if (data.on == 1 && data.total == 1) {
-                    jQuery("#progress").get(0).innerHTML = "Processing complete -- building your email";
+                    jQuery("#progress").get(0).innerHTML = "Processing complete -- building your email<br>Edit after uploading from your <a href='http://abundatrade.com/trade/user/profile/'>profile</a>";
                 }
                 else if (data.on == 2 && data.total == 2) {
                     //processing complete
                     clearInterval(stop);
                     jQuery("#bar").css('width', percent + "%")
-                    jQuery("#progress").get(0).innerHTML = "Processing complete -- sending your valuation to you ";
+                    jQuery("#progress").get(0).innerHTML = "Processing complete -- sending your valuation to you<br>Edit after uploading from your <a href='http://abundatrade.com/trade/user/profile/'>profile</a>";
                     jQuery("#percent").get(0).innerHTML = Math.round(percent) + "%";
 
                     if (!donot_reset) {
@@ -357,7 +362,7 @@ function display_bulk_upload(display_prompt, id) {
                     //display status
                     jQuery("#bar").css('width', percent + "%")
                     jQuery("#progress").get(0).innerHTML = data.on + " of approx. " + data.total;
-                    jQuery("#percent").get(0).innerHTML = Math.round(percent) + "%";
+                    jQuery("#percent").get(0).innerHTML = Math.round(percent) + "% <br>Edit after uploading from your <a href='http://abundatrade.com/trade/user/profile/'>profile</a>";
                 }
             }
         });
@@ -436,7 +441,7 @@ function delete_the_row(obj) {
 * load up the table based on the results.
 *
 */
-function load_previous_session(pretty) {
+function load_previous_session(pretty, ignore_errors) {
     var request = jQuery.ajax(
         {
             type: 'GET',
@@ -466,7 +471,7 @@ function load_previous_session(pretty) {
                     .slideDown("slow", function () { var $set = jQuery(this); $set.replaceWith($set.contents()); })
             }
 
-            display_totals(part);
+            display_totals(part, ignore_errors);
         }
         //build_row(data);
         //jQuery('#abundaCalcTbl > tbody').prepend(data.row_html);
@@ -475,7 +480,9 @@ function load_previous_session(pretty) {
     });
 
     request.fail(function (jqXHR, textStatus, errorThrown) {
-        report_error('load_previous_session', jqXHR);
+        if (!ignore_errors) {
+            report_error('load_previous_session', jqXHR);
+        }
     });
 }
 
@@ -594,7 +601,8 @@ function displayLogin(custom_message) {
     }
 
     if (!loggedIn) {
-        return '<label for="user">Email Address:</label><br/><input type="text" id="abundatrade_user" name="abundatrade_user" value="" /><br/>'+
+        return '<p>If you have an account, please login</p>' +
+            '<label for="user">Email Address:</label><br/><input type="text" id="abundatrade_user" name="abundatrade_user" value="" /><br/>' +
             '<label for="password">Password:</label><br/><input type="password" name="abundatrade_password" id="abundatrade_password" value=""/><br/>'+
             '<div style="display:none" id="logging_on"><img src="'+abundacalc.url+'/images/spinner.gif">Logging in -- please wait</div><span id="login_error" class="abundatrade_error" style="display:none;">Invalid Password/Email</span><br/>'+
             '<label for="remember">Remember me?</label><input type="checkbox" name="remember" id="remember"/><br/>'+
@@ -714,6 +722,15 @@ function display_promo() {
         '<label for="newsletter">Would you like to get the newsletter?</label><br/>' +
         '<label for="newsletter_yes">Yes Please: </label><input checked="true" type="checkbox" name="newsletter"/><br/>';
     }
+}
+
+/** Live Lookups */
+function check_for_new() {
+    var stop = setInterval(function () {
+        if (loggedIn) {
+            load_previous_session(false, true);
+        }
+    }, 2000);
 }
 
 /** Submit a list */
@@ -1209,18 +1226,32 @@ jQuery(document).ready(function () {
 
             jQuery('#abundaGadgetInput').submit(function () { addGadget(jQuery('#gadget_code').val(), jQuery('#header_condition').val()); });
         }
+
+        check_for_new();
     }
 });
 
-function transform_into_full_calc() {
-    jQuery("#gadget_abundatrade").fadeOut();
-    jQuery("#bulk").slideUp(500);
-    jQuery("#top_input_section").fadeIn(500);
-    jQuery("#second_content").slideDown(500);
-    jQuery("#abundaCalcTbl").delay(100).fadeIn(400);
-    jQuery("#bulk_button").slideDown(1000);
-    jQuery("#very_bottom").slideDown(500);
-    load_previous_session(false);
+function transform_into_full_calc(mode) {
+    if (mode == 'gadget') {
+        jQuery("#gadget_abundatrade").fadeIn();
+        jQuery("#bulk").slideUp(500);
+        //jQuery("#top_input_section").fadeIn(500);
+        jQuery("#second_content").slideDown(500);
+        jQuery("#abundaCalcTbl").delay(100).fadeIn(400);
+        //jQuery("#bulk_button").slideDown(1000);
+        jQuery("#very_bottom").slideDown(500);
+        load_previous_session(false);
+    }
+    else {
+        jQuery("#gadget_abundatrade").fadeOut();
+        jQuery("#bulk").slideUp(500);
+        jQuery("#top_input_section").fadeIn(500);
+        jQuery("#second_content").slideDown(500);
+        jQuery("#abundaCalcTbl").delay(100).fadeIn(400);
+        jQuery("#bulk_button").slideDown(1000);
+        jQuery("#very_bottom").slideDown(500);
+        load_previous_session(false);
+    }
     return false;
 }
 
@@ -1235,13 +1266,40 @@ function tour_func(e, v, m, f) {
     }
 }
 
+var gadgetstates = [
+    {
+        title: 'Welcome',
+        html: 'Register and edit your past submissions, get paid and mark them as heading our way',
+        buttons: { Next: 1 },
+        focus: 1,
+        position: { container: '#login_status_abundatrade', x: 0, y: 50, width: 200, arrow: 'tl' },
+        submit: tour_func
+    },
+    {
+        title: 'Getting Started',
+        html: 'Choose your gadget you want to sell to us from here.',
+        buttons: { Back: -1, Next: 1 },
+        focus: 1,
+        position: { container: '#gadget_code', x: 0, y: 50, width: 200, arrow: 'tl' },
+        submit: tour_func
+    },
+    {
+        title: 'Add it',
+        html: 'Add your item to your working trade list, you can signin, signup, or submit as a guest for an instant quote.',
+        buttons: { Done: 2 },
+        focus: 1,
+        position: { container: '#abundaGadgetInput .submit_holder', x: 0, y: 50, width: 200, arrow: 'tl' },
+        submit: tour_func
+    },
+];
+
 var tourstates = [
     {
         title: 'Welcome',
-        html: 'Ready to take a tour of the AbundaTrade Calculator?',
+        html: 'Register and edit your past submissions, get paid, and mark them as heading our way',
         buttons: { Next: 1 },
         focus: 1,
-        position: { container: '#abundatrade', x: 0, y: 0, width: 200, arrow: 'tl' },
+        position: { container: '#login_status_abundatrade', x: 0, y: 50, width: 200, arrow: 'tl' },
         submit: tour_func
     },
     {
@@ -1324,8 +1382,9 @@ function addGadget(ean, condition) {
                             });
 
     request.done(function (data) {
+        transform_into_full_calc('gadget');
         // No errors
-        //
+        /*
         if (data != '') {
             display_totals(data);
             jQuery.prompt("would you like to add any books, cds, DVDs, or BluRays to your list?", {
@@ -1348,7 +1407,7 @@ function addGadget(ean, condition) {
         else {
             data.responseText = data;
             report_error('addGadget', data);
-        }
+        }*/
     });
 
     request.fail(function (jqXHR, textStatus, errorThrown) {
@@ -1414,7 +1473,7 @@ function build_row(data) {
     data.row_html = "";
 
     if (jQuery("#ready2go").length > 0) {
-        jQuery("#ready2go").remove();
+        //jQuery("#ready2go").remove();
     }
 
     if (jQuery.isArray(data.row)) {
@@ -1450,6 +1509,9 @@ function build_row(data) {
 
 /** Write out the html for the row */
 function write_html(data, row) {
+    if (row.category == 'Gadget') {
+        row.title += ' (Like New)';
+    }
     return "<tr class='new response'> <td class='upc'>" + row.product_code + "</td> <td class='details'> <div class='td_image'> <img src='" + row.images + "' alt='" + row.title + "' /> </div><div class='td_details'> <strong>" + row.title + "</strong><br /><em>" + (row.author == null ? '' : row.author) + "</em><br/>" + (row.category == null ? "" : row.category) + "</div>  </div></td> <td class='quantity'>" + row.quantity + "</td> <td class='item'>" + (row.worthless == true ? "<p class='blatent'>No Abunda Value</p>" : "") + (row.overstocked == true ? "<span class='blatent'>Over Stocked Item</span>" : "") + "<div class='item'>" + data.currency_for_total + row_price + "</div></td> <td class='values'>" + data.currency_for_total + row_total + "</td> <td class='delete'> <a href='#' alt='Delete' class='delete_this_row' id='del_" + row.item_id + "'>Delete</a></tr>";
 }
 
