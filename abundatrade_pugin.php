@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.6.7
+ * @version 1.7
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.6.7
+Version: 1.7
 Author URI: http://withinboredom.info
  */
 
@@ -164,7 +164,7 @@ class abundatrade_withinboredom {
                      </tr>
                   </tfoot>-->
                   <tbody id="abundaCalcBody_process">
-		  <tr><td colspan="6" class="center">&nbsp;</td></tr>
+		  <tr><td colspan="6" id="ready2go" class="center">&nbsp;</td></tr>
 		</tbody>
 		<tbody >
 			<tr class="response">
