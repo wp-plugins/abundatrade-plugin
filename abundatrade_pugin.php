@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.7.6
+ * @version 1.7.7
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.7.6
+Version: 1.7.7
 Author URI: http://withinboredom.info
  */
 
@@ -68,6 +68,195 @@ class abundatrade_withinboredom {
         return $config;
     }
     
+    public function validate_required($name) {
+        if(isset($_REQUEST[$name]) && $_REQUEST[$name] == "") {
+            return false;
+        }
+        return true;
+    }
+    
+    public function get_value($name) {
+        if(isset($_REQUEST[$name])) {
+            return $_REQUEST[$name];
+        }
+        return "";
+    }
+    
+    public function gadget($atts) {
+        $closediv = "</div>";
+        
+        $gad_cat = '';
+        $red = "style='border: 1px solid red'";
+        $all_valid = false;
+        $show_all = "style='display:none'";
+        
+        if(isset($_REQUEST['gad_cat'])) {
+            if ($_REQUEST['gad_cat'] == -1) {
+                $gad_cat = $red;
+            }
+            $all_valid = true;
+        }
+        
+        if(!$this->validate_required('my_name')) {
+            $name = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+        
+        if(!$this->validate_required('email')) {
+            $email = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+                
+        if(!$this->validate_required('address_street')) {
+            $address_street = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+        
+        if(!$this->validate_required('address_city')) {
+            $address_city = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+        
+        if(!$this->validate_required('address_state')) {
+            $address_state = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+        
+        if(!$this->validate_required('address_zip')) {
+            $address_zip = $red;
+            $all_valid = false;
+        }
+        else {
+        }
+        
+        $dvd = array(
+            '-1' => 'Select Your Free CD and DVD',
+            '-2' => 'No Thank You',
+            '-3' => '-- DVDs --',
+            'Austin Powers in Goldmember' => 'Austin Powers in Goldmember',
+            'Barbershop 2: Back in Business (Special Edition)' => 'Barbershop 2: Back in Business (Special Edition)',
+            'Batman Begins (Single-Disc Widescreen Edition)' => 'Batman Begins (Single-Disc Widescreen Edition)',
+            'Superman Returns (Widescreen Edition)' => 'Superman Returns (Widescreen Edition)',
+            'King Kong (Widescreen Edition)' => 'King Kong (Widescreen Edition)',
+            'The Clique' => 'The Clique',
+            'Blade' => 'Blade',
+            'The Lord of the Rings: The Fellowship of the Ring (Two-Disc Widescreen Theatrical Edition)' => 'The Lord of the Rings: The Fellowship of the Ring (Two-Disc Widescreen Theatrical Edition)',
+            'The Matrix Reloaded (Full Screen Edition)' => 'The Matrix Reloaded (Full Screen Edition)',
+            'Welcome to Nanalan - Favorites' => 'Welcome to Nanalan - Favorites',
+            '-4' => '-- CDs --',
+            'Christina Aguilera -- Christina Aguilera' => 'Christina Aguilera -- Christina Aguilera',
+            'Our Time in Eden -- 10,000 Maniacs' => 'Our Time in Eden -- 10,000 Maniacs',
+            'Backstreet Boys -- Backstreet Boys' => 'Backstreet Boys -- Backstreet Boys',
+            'Rock Spectacle -- Barenaked Ladies' => 'Rock Spectacle -- Barenaked Ladies',
+            'Four -- Blues Traveler' => 'Four -- Blues Traveler',
+            'New Beginning -- Tracy Chapman' => 'New Beginning -- Tracy Chapman',
+            'Voice of an Angel -- Charlotte Church' => 'Voice of an Angel -- Charlotte Church',
+            'Recovering the Satellites -- Counting Crows' => 'Recovering the Satellites -- Counting Crows',
+            'Falling Into You -- Celine Dion' => 'Falling Into You -- Celine Dion',
+            'Yes I Am -- Melissa Etheridge' => 'Yes I Am -- Melissa Etheridge',
+            'New Miserable Experience -- Gin Blossoms' => 'New Miserable Experience -- Gin Blossoms',
+            'Cracked Rear View -- Hootie & The Blowfish' => 'Cracked Rear View -- Hootie & The Blowfish',
+            'Pieces of You -- Jewel' => 'Pieces of You -- Jewel',
+            'Ingenue -- KD Lang' => 'Ingenue -- KD Lang',
+            'Why I Sing the Blues -- BB King' => 'Why I Sing the Blues -- BB King',
+            'Throwing Copper -- Live.' => 'Throwing Copper -- Live.',
+            'Ray of Light -- Madonna' => 'Ray of Light -- Madonna',
+            'Jagged Little Pill -- Alanis Morissette' => 'Jagged Little Pill -- Alanis Morissette',
+            'Monster -- R.E.M.' => 'Monster -- R.E.M.',
+            'Mirrorball -- Sarah McLachlan' => 'Mirrorball -- Sarah McLachlan',
+            'Seal -- Seal' => 'Seal -- Seal',
+            'Titanic: Music from the Motion Picture Soundtrack' => 'Titanic: Music from the Motion Picture Soundtrack',
+            'Baby One More Time -- Britney Spears' => 'Baby One More Time -- Britney Spears',
+            'The Woman in Me -- Shania Twain' => 'The Woman in Me -- Shania Twain',
+            'Motown Love Songs -- Various Artists' => 'Motown Love Songs -- Various Artists',
+            'Reggae Hits, Vol. 36 -- Various Artists' => 'Reggae Hits, Vol. 36 -- Various Artists'
+            );
+        
+        if ($all_valid) {
+            $display = "<h1 id='finalize'><img src='http://abundatrade.com/recommerce/wp-content/plugins/abundatrade_plugin/images/spinner.gif' />&nbsp;&nbsp;Please wait while we finalize your quote</h1>";
+        }
+        else {
+            
+            $display = "<form method='get' action='#'><input type='hidden' name='gadget' value='true'/><div id='abundatrade_gadget'>";
+            $display .= "<h1 id='finalize' style='display:none'></h1>";
+            $display .= "<div class='category_selector select_container'><div id='category_selection' $gad_cat class='selection sel_center'>This form requires javascript. Please use a javascript enabled browser";
+            $display .= $closediv . $closediv;
+            
+            $display .= "<div class='large_container' style='display:none' id='large_container_div'><div id='manufacturer_selection' class='selection sel_left'>";
+            $display .= $closediv;
+            
+            $display .= "<div id='carrier_selection' class='selection sel_left'>";
+            $display .= $closediv;
+            
+            $display .= "<div id='device_selection' class='selection sel_left'>";
+            $display .= $closediv;
+            
+            $display .= "<div id='condition_selection' class='selection sel_left'>";
+            $display .= $closediv . $closediv;
+            
+            $display .= "<div class='quote_display select_container' id='quote_container_div' style='display:none'><div id='quote' class='quote_center'>";
+            $display .= $closediv . $closediv;
+            
+            $display .= "<div class='description_container'><div id='description' class='box_center'>";
+            $display .= "<p id='desc_desc'>Tell us more about your gadget including complete model #, make, etc...</p>";
+            $display .= "<textarea name='description_entry'></textarea>";
+            $display .= $closediv . $closediv;
+            $display .= "<div id='master_container_contact' $show_all>";
+            $display .= "<div class='contact_form_container'><div class='contact_form_thirds'>";
+            $display .= "<input $name type='text' placeholder='Your name*' name='my_name' value='" . $this->get_value("my_name") . "' /><span class='required'>*</span>";
+            $display .= $closediv;
+            $display .= "<div class='contact_form_thirds'>";
+            $display .= "<input $email type='text' placeholder='Your email*' name='email' value='" . $this->get_value("email") . "'/><span class='required'>*</span>";
+            $display .= $closediv;
+            $display .= "<div class='contact_form_thirds'>";
+            $display .= "<input $phone type='text' placeholder='Your phone #' name='phone' value = '" . $this->get_value("phone") . "'/>";
+            $display .= $closediv . $closediv;
+            $display .= "<div class='contact_form_container'><div class='contact_form_thirds' style='width:49%'>";
+            $display .= "<input $address_street type='text' placeholder='Address*' name='address_street' value='" . $this->get_value("address_street") . "'/><span class='required'>*</span>"; 
+            $display .= $closediv;
+            $display .= "<div class='contact_form_thirds' style='width:49%'>";
+            $display .= "<input $address_street_two type='text' placeholder='Address Line 2' name='address_street_two' value='" . $this->get_value("address_street_two") . "'/>";
+            $display .= $closediv . $closediv;
+            $display .= "<div class='contact_form_container'><div class='contact_form_thirds'>";
+            $display .= "<input $address_city type='text' placeholder='City*' name='address_city' value='" . $this->get_value("address_city") . "'/><span class='required'>*</span>";
+            $display .= $closediv;
+            $display .= "<div class='contact_form_thirds'>";
+            $display .= "<input $address_state type='text' placeholder='State*' name='address_state' value='" . $this->get_value("address_state") . "'/><span class='required'>*</span>";
+            $display .= $closediv;
+            $display .= "<div class='contact_form_thirds'>";
+            $display .= "<input $address_zip type='text' placeholder='Zip Code*' name='address_zip' value='" . $this->get_value("address_zip") . "'/><span class='required'>*</span>";
+            $display .= $closediv . $closediv;
+            $display .= "<div style='height:auto;' class='contact_form_container'><div class='contact_form_thirds'></div><div class='contact_form_thirds'>";
+            $display .= "<select name='dvd' id='choose_dvd' onChange='changeFree()' style='width:90%'>";
+            foreach ($dvd as $value => $text) {
+                $display .= "<option " . (isset($_REQUEST['dvd']) && $_REQUEST['dvd'] == htmlentities($value) ? "selected" : "") . " value='" . htmlentities($value) . "'>" . htmlentities($text) . "</option>";
+            }
+            $display .= "</select>";
+            $display .= $closediv . $closediv;
+            $display .= "<div class='contact_form_container'><div class='contact_form_thirds'></div><div class='contact_form_thirds'>";
+            $display .= "<input disabled='disabled' type='submit' value='Submit to Make Your Cash'/>";
+            $display .= $closediv . $closediv . $closediv;
+            $display .= "</form>";
+            
+            $display .= $closediv;
+        }
+        
+        if ($_GET['gadget'] == true) {
+            return $display;
+        }
+        else return "";
+    }
+    
     public function shortcode($atts) {
         
         if (!isset($atts['gadget_only'])) $atts['gadget_only'] = false;
@@ -81,8 +270,8 @@ class abundatrade_withinboredom {
             $gadget_state = ' display: none;';
         }
         
-                $display = '<div id="abundatrade">';
-         $top = '
+        $display = '<div id="abundatrade">';
+        $top = '
          <div id="top_input_section" class="calc_content_wrap calc_color1 calcbg1" style="'.$hide.'">
 
             <form id="abundaInput" class="abundaInput" style="margin-top: 6px;" onsubmit="return false;" method="post" >
@@ -108,7 +297,7 @@ class abundatrade_withinboredom {
                 <div class="submit_holder">
                     <input class="btn1 right btn_link1 btnbg1" value="+ Add Item" type="submit"/>
                 </div>';
-         
+        
         $bulk_button = '
             <div id="bulk_button" class="calcbg1" style="'.$hide.'">
                 <p class="abunda_text calc_color1">Have a lot of items? <a href="#" onclick="return bulk_open();" class="calc_linkS1">Bulk Upload</a></p>
@@ -138,7 +327,8 @@ class abundatrade_withinboredom {
             </div>
         </div>';
         $endform = "</form></div>";
-        $endtop = "<a id='super_show' href='#' onclick='toggle_show(); return false;'>Hide/Show zero value items</a></div>";
+        $endtop = "</div>";
+        $endAll = "<a id='super_show' href='#' onclick='toggle_show(); return false;'>Show all zero value items</a></div>";
         $table = '<table cellspacing="0" cellpadding="0" id="abundaCalcTbl" style="'.$hide.'">
                   <thead>
                     <tr>
@@ -226,8 +416,8 @@ class abundatrade_withinboredom {
 
         $display .= $table;
         $display .= $very_bottom;
-        $display .= $endtop;
-            
+        $display .= $endAll;
+        
         return $display;
     }
     
@@ -240,6 +430,11 @@ class abundatrade_withinboredom {
     
     public function doshortcode($atts) {
         $display = apply_filters("abundatrade(shortcode(abundatrade))", $atts);
+        return $display;
+    }
+    
+    public function dogadgets($atts) {
+        $display = apply_filters("abundatrade(shortcode(gadgets))", $atts);
         return $display;
     }
     
@@ -264,17 +459,22 @@ class abundatrade_withinboredom {
             wp_register_style("abundatrade_prompt_classic", $this->folders['PluginUrl'] . '/themes/classic-prompt.css');
         }
         
+        wp_register_style("abunda_gadgets", $this->folders['PluginUrl'] . '/themes/gadget.css');
+        
         wp_register_script("abundatrade_md5", $this->folders['PluginUrl'] . '/js/MD5.js');
         wp_register_script("abundatrade_remote", $this->folders['PluginUrl'] . '/js/remote.js', array('jquery','abundatrade_md5'));
         wp_register_script("abundatrade_impromptu", $this->folders['PluginUrl'] . '/js/jquery-impromptu.4.0.min.js', array('jquery'));
         wp_register_script("abundatrade_register", $this->folders['PluginUrl'] . '/js/register.js', array('jquery', 'abundatrade_remote'));
+        wp_register_script("abundatrade_gadgets", $this->folders['PluginUrl'] . '/js/abunda_gadgets_short.js', array('jquery'));
         
         wp_enqueue_style("abundatrade_classic");
         wp_enqueue_style("abundatrade_prompt_classic");
+        wp_enqueue_style("abunda_gadgets");
         wp_enqueue_script("abundatrade_md5");
         wp_enqueue_script("abundatrade_remote");
         wp_enqueue_script("abundatrade_impromptu");
         wp_enqueue_script("abundatrade_register");
+        wp_enqueue_script("abundatrade_gadgets");
         $abundacalc = array('server' => 'abundatrade.com', 
             'url' => $this->folders['PluginUrl'], 
             'thanks' => $this->settings->Thank_you_page);
@@ -293,8 +493,10 @@ class abundatrade_withinboredom {
         add_filter("abundatrade(getFolders)", array(&$this, "getFolders"), 1);
         add_filter("abundatrade(applyConfig)", array(&$this, "applyConfig"), 1);
         add_filter("abundatrade(shortcode(abundatrade))", array(&$this, "shortcode"), 1);
+        add_filter("abundatrade(shortcode(gadgets))", array(&$this, "gadget"), 1);
         
         add_shortcode("abundatrade", array($this, "doshortcode"));
+        add_shortcode("abundagadgets", array($this, "dogadgets"));
         
         add_filter("abundatrade(settings)", array($this, "getSettings"), 200, 0);
         
