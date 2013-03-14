@@ -1,7 +1,7 @@
 <?php
 /**
  * @package abundatrade_plugin
- * @version 1.7.7
+ * @version 1.8
  * @author Robert Landers (landers.robert@gmail.com)
  */
 /*
@@ -9,7 +9,7 @@ Plugin Name: Abundatrade Plugin
 Plugin URI: http://wordpress.org/extend/plugins/abundatrade-plugin/
 Description: Earn extra income for your site via the Abundatrade affiliate program!
 Author: withinboredom
-Version: 1.7.7
+Version: 1.8
 Author URI: http://withinboredom.info
  */
 
@@ -89,6 +89,35 @@ class abundatrade_withinboredom {
         $red = "style='border: 1px solid red'";
         $all_valid = false;
         $show_all = "style='display:none'";
+        
+        preg_match('/MSIE (.*?);/', $_SERVER['HTTP_USER_AGENT'], $matches);
+
+        $use_labels = false;
+        if (count($matches)>1){
+            //Then we're using IE
+            $version = $matches[1];
+
+            $use_labels = true;
+            switch(true){
+                case ($version<=8):
+                    //IE 8 or under!
+                    $use_labels = true;
+                    break;
+
+                case ($version==9):
+                    //IE9!
+                    $use_labels = true;
+                    break;
+                case ($version == 10):
+                    $use_labels = false;
+                default:
+                //You get the idea
+            }
+        }
+        
+        if (isset($atts['gad_cat'])) {
+            $this->export = array('gad_cat' => $atts['gad_cat']);
+        }
         
         if(isset($_REQUEST['gad_cat'])) {
             if ($_REQUEST['gad_cat'] == -1) {
@@ -187,7 +216,7 @@ class abundatrade_withinboredom {
         }
         else {
             
-            $display = "<form method='get' action='#'><input type='hidden' name='gadget' value='true'/><div id='abundatrade_gadget'>";
+            $display = "<form method='get' action='#'><input type='hidden' id='is_gadget' name='gadget' value='true'/><input type='hidden' name='unknown' value='false'><div id='abundatrade_gadget'>";
             $display .= "<h1 id='finalize' style='display:none'></h1>";
             $display .= "<div class='category_selector select_container'><div id='category_selection' $gad_cat class='selection sel_center'>This form requires javascript. Please use a javascript enabled browser";
             $display .= $closediv . $closediv;
@@ -209,31 +238,55 @@ class abundatrade_withinboredom {
             
             $display .= "<div class='description_container'><div id='description' class='box_center'>";
             $display .= "<p id='desc_desc'>Tell us more about your gadget including complete model #, make, etc...</p>";
-            $display .= "<textarea name='description_entry'></textarea>";
+            $display .= "<textarea name='description_entry' " . ($use_labels ? "rows='10'" : "") . "></textarea>";
             $display .= $closediv . $closediv;
             $display .= "<div id='master_container_contact' $show_all>";
             $display .= "<div class='contact_form_container'><div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='my_name'>Your name*</label><br>";
+            }
             $display .= "<input $name type='text' placeholder='Your name*' name='my_name' value='" . $this->get_value("my_name") . "' /><span class='required'>*</span>";
             $display .= $closediv;
             $display .= "<div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='email'>Your Email*</label><br>";
+            }
             $display .= "<input $email type='text' placeholder='Your email*' name='email' value='" . $this->get_value("email") . "'/><span class='required'>*</span>";
             $display .= $closediv;
             $display .= "<div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='phone'>Your phone #</label><br>";
+            }
             $display .= "<input $phone type='text' placeholder='Your phone #' name='phone' value = '" . $this->get_value("phone") . "'/>";
             $display .= $closediv . $closediv;
             $display .= "<div class='contact_form_container'><div class='contact_form_thirds' style='width:49%'>";
+            if ($use_labels) {
+                $display .= "<label for='address_street'>Address*</label><br>";
+            }
             $display .= "<input $address_street type='text' placeholder='Address*' name='address_street' value='" . $this->get_value("address_street") . "'/><span class='required'>*</span>"; 
             $display .= $closediv;
             $display .= "<div class='contact_form_thirds' style='width:49%'>";
+            if ($use_labels) {
+                $display .= "<label for='address_street_two'>Address Line 2</label><br>";
+            }
             $display .= "<input $address_street_two type='text' placeholder='Address Line 2' name='address_street_two' value='" . $this->get_value("address_street_two") . "'/>";
             $display .= $closediv . $closediv;
             $display .= "<div class='contact_form_container'><div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='address_city'>City*</label><br>";
+            }
             $display .= "<input $address_city type='text' placeholder='City*' name='address_city' value='" . $this->get_value("address_city") . "'/><span class='required'>*</span>";
             $display .= $closediv;
             $display .= "<div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='address_state'>State*</label><br>";
+            }
             $display .= "<input $address_state type='text' placeholder='State*' name='address_state' value='" . $this->get_value("address_state") . "'/><span class='required'>*</span>";
             $display .= $closediv;
             $display .= "<div class='contact_form_thirds'>";
+            if ($use_labels) {
+                $display .= "<label for='address_zip'>Zip Code*</label><br>";
+            }
             $display .= "<input $address_zip type='text' placeholder='Zip Code*' name='address_zip' value='" . $this->get_value("address_zip") . "'/><span class='required'>*</span>";
             $display .= $closediv . $closediv;
             $display .= "<div style='height:auto;' class='contact_form_container'><div class='contact_form_thirds'></div><div class='contact_form_thirds'>";
@@ -251,7 +304,13 @@ class abundatrade_withinboredom {
             $display .= $closediv;
         }
         
-        if ($_GET['gadget'] == true) {
+        if (!isset($this->export)) { 
+            $this->export = array();
+        }
+        
+        $display .= "<script type='text/javascript'> /* <![CDATA[ */ var abundacalc_gad = " . json_encode($this->export) . ";/* ]]> */</script>";
+        
+        if (true) {
             return $display;
         }
         else return "";
@@ -476,7 +535,8 @@ class abundatrade_withinboredom {
         wp_enqueue_script("abundatrade_register");
         wp_enqueue_script("abundatrade_gadgets");
         $abundacalc = array('server' => 'abundatrade.com', 
-            'url' => $this->folders['PluginUrl'], 
+            'url' => $this->folders['PluginUrl'],
+            'export' => $this->export,
             'thanks' => $this->settings->Thank_you_page);
         if (isset($_REQUEST['upload_id']) && $_REQUEST['upload_id'] != '') {
             $abundacalc['upload_id'] = $_REQUEST['upload_id'];

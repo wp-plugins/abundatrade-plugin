@@ -1,5 +1,40 @@
 ﻿// JScript File
 
+Object.keys = Object.keys || (function () {
+    var hasOwnProperty = Object.prototype.hasOwnProperty,
+        hasDontEnumBug = !{ toString: null }.propertyIsEnumerable("toString"),
+        DontEnums = [
+            'toString',
+            'toLocaleString',
+            'valueOf',
+            'hasOwnProperty',
+            'isPrototypeOf',
+            'propertyIsEnumerable',
+            'constructor'
+        ],
+        DontEnumsLength = DontEnums.length;
+
+    return function (o) {
+        if (typeof o != "object" && typeof o != "function" || o === null)
+            throw new TypeError("Object.keys called on a non-object");
+
+        var result = [];
+        for (var name in o) {
+            if (hasOwnProperty.call(o, name))
+                result.push(name);
+        }
+
+        if (hasDontEnumBug) {
+            for (var i = 0; i < DontEnumsLength; i++) {
+                if (hasOwnProperty.call(o, DontEnums[i]))
+                    result.push(DontEnums[i]);
+            }
+        }
+
+        return result;
+    };
+})();
+
 function drawCategoryPage(data) {
     if (data.valid) {
         jQuery("#carrier_selection").get(0).innerHTML = "";
@@ -124,6 +159,8 @@ var setCar = null;
 var setDev = null;
 var setCond = null;
 var setMan = null;
+
+var unknown = false;
 
 function changeCond() {
     var catID = jQuery("#gad_cat").val();
@@ -286,12 +323,15 @@ function HideQuote() {
 function ShowDescription(anyDevice) {
     if (anyDevice == 'featured') {
         jQuery("#desc_desc").get(0).innerHTML = "Please add any additional information such as detailed condition description and accessories included or not included.";
+        makeUnknown('false');
     }
     else if (anyDevice == 'damaged') {
         jQuery("#desc_desc").get(0).innerHTML = "Please add any additional information such as detailed condition description and accessories included or not included.";
+        makeUnknown('false');
     }
     else {
         jQuery("#desc_desc").get(0).innerHTML = "Please tell us about your gadget including complete model information, detailed condition description, and accessories included or not included.";
+        makeUnknown('true');
     }
     if (!jQuery(".description_container").is(":visible")) {
         jQuery(".description_container").slideDown();
@@ -342,6 +382,11 @@ function findMessage(data) {
     return 4;
 }
 
+function makeUnknown(ival) {
+    jQuery("[name='unknown']").val(ival);
+    unknown = ival;
+}
+
 function finalize_quote() {
     var request = jQuery.ajax("http://" + abundacalc.server + "/trade/process/finalize_quote.php", {
         dataType: 'jsonp',
@@ -354,23 +399,34 @@ function finalize_quote() {
             email: getParameterByName('email'),
             phone: getParameterByName('phone'),
             street: getParameterByName('address_street'),
+            street_two: getParameterByName('address_street_two'),
             city: getParameterByName('address_city'),
             state: getParameterByName('address_state'),
-            zip: getParameterByName('address_zip')
+            zip: getParameterByName('address_zip'),
+            cat: getParameterByName('gad_cat'),
+            dvd: getParameterByName('dvd'),
+            unknown: getParameterByName('unknown')
         }
     });
     
     request.success(function (data) {
-        window.location.href = "http://abundatrade.com/free-cd-dvd-with-gadget-trade.php";
+        if (data.success) {
+            window.location.href = "http://abundatrade.com/free-cd-dvd-with-gadget-trade.php";
+        }
     });
 }
 
 function determineStart() {
-    if (getParameterByName("gadget") == 'true') {
+    if (jQuery("#is_gadget").val() == 'true' || getParameterByName('gadget') == 'true') {
+
+        if (abundacalc_gad.gad_cat) {
+            setCat = abundacalc_gad.gad_cat;
+        }
 
         if (getParameterByName("gad_cat") != "") {
             setCat = getParameterByName("gad_cat");
         }
+
         if (getParameterByName("gad_man") != "") {
             setMan = getParameterByName("gad_man");
         }
@@ -380,6 +436,9 @@ function determineStart() {
         if (getParameterByName("gad_dev") != "") {
             setDev = getParameterByName("gad_dev");
         }
+        if (getParameterByName("ean") != "") {
+            setDev = getParameterByName("ean");
+        }
         if (getParameterByName("gad_cond") != "") {
             setCond = getParameterByName("gad_cond");
         }
@@ -388,4 +447,4 @@ function determineStart() {
     }
 }
 
-jQuery(determineStart());
+jQuery(determineStart);
