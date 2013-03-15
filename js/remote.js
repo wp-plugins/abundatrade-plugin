@@ -623,7 +623,7 @@ function displayLoginButtons() {
         if (just_logging_in) {
             return { Cancel: 0, Login: -1, Register: 1 };
         }
-        return { Cancel: 0, Login: -1, Submit: 1, };
+        return { Cancel: 0, Login: -1, 'Just Submit': 1, };
     }
 }
 
@@ -760,15 +760,20 @@ function submit_modal(callback_to_submit, final_display, custom_message) {
                             }
                         }
                         else {
-                            if (but == 0)
+                            if (but == 0) {
+                                just_logging_in = false;
                                 return 0;
+                            }
                             if (but == 1) {
-
-                                Register(register_pass(), final_display, callback_to_submit);
+                                if (just_logging_in) {
+                                    window.location.href = "http://" + abundacalc.server + "/trade/user/create/";
+                                }
+                                else {
+                                    Register(register_pass(), final_display, callback_to_submit);
+                                }
                             }
                             if (but == 2) {
-                                Register(register_guest(), final_display, callback_to_submit)
-
+                                Register(register_guest(), final_display, callback_to_submit);
                             }
                             if (but == -1) {
                                 jQuery("#logging_on").fadeIn();
